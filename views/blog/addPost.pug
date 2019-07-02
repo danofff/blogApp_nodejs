@@ -1,0 +1,26 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    .pageMainHeader.mt-5
+        h3 Форма создания публикации
+    form(action="/add-post" method="POST")
+        .form-group
+            label(for="title") Заголовок поста:
+                span.star *
+            input.form-control(type="text", name="title" id="title" placeholder="Заголовок" required)
+            small.form-text.text-muted Заголовок должен отражать смысл публикации
+        .form-group
+            label(for="theme") Тема поста:
+            select.form-control(name="theme" id="theme" placeholder="выберете тему поста")
+               option(value="1") Тема1
+               option(value="2") Тема2
+               option(value="3") Тема3
+               option(value="4") Тема4
+               option(value="5") Тема5
+        .form-group
+            label(for="text") Текст:
+            textarea.form-control(name="text", id="text" rows="10")
+        button.btn.btn-success(type="submit") Опубликовать
+
+include ../partials/foot.pug

@@ -1,0 +1,19 @@
+.container
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+        a.navbar-brand(href="/") Free blog
+        button.navbar-toggler(type="button" 
+                            data-toggle="collapse" 
+                            data-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation")
+            span.navbar-toggler-icon
+        div.collapse.navbar-collapse(id="navbarSupportedContent")
+            ul.navbar-nav.mr-auto
+                li.nav-item(class=(path==='/' ? 'active' : ''))
+                    a.nav-link(href='/') Домой
+                li.nav-item(class=(path==='/add-post' ? 'active' : ''))
+                    a.nav-link(href='/add-post') Написать
+            
+            a.btn.btn-outline-light(href="/login") Войти
+            a.btn.btn-outline-light.mb-3.mt-3.ml-3(href="/register") Регистрация
