@@ -25,5 +25,5 @@ app.use(errorController.get404);
 
 
 app.listen(port, ()=>{
-    console.log('blog app is strted!');
+    console.log('blog app is started!');
 });
