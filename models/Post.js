@@ -8,11 +8,9 @@ const postSchema = new Schema({
         required: true
     },
     theme: {
-        id: {
-            type: mongoose.Schema.ObjectId,
-            ref: 'Theme'
-        },
-        themeName: String
+       type: Schema.Types.ObjectId,
+       ref: "Theme",
+       required: true
     },
     text: String,
     date: {

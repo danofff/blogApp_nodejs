@@ -2,8 +2,8 @@ const Post = require('../models/Post');
 const Theme = require('../models/Theme');
 
 exports.getAllPosts = (req, res, next) => {
-    Post.find({})
-        .populate('themes')
+    Post.find()
+        .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
                 pageTitle: 'All posts',
@@ -18,7 +18,7 @@ exports.getAllPosts = (req, res, next) => {
 }
 
 exports.getAddPost = (req, res, next) => {
-    Theme.find({})
+    Theme.find()
         .then(themes => {
             res.render('blog/addPost', {
                 pageTitle: 'Add Post',
@@ -34,11 +34,11 @@ exports.getAddPost = (req, res, next) => {
 
 exports.postAddPost = (req, res, next) => {
     const title = req.body.title;
-    const themeId = req.body.theme;
+    const theme = req.body.theme;
     const text = req.body.text;
     const post = new Post({
        title: title,
-       themeId: themeId,
+       theme: theme,
        text: text 
     });
     post.save()

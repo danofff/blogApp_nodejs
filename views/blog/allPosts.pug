@@ -5,8 +5,10 @@ include ../partials/navigation.pug
     each post in posts
         h2 #{post.title}
         small.text-muted.font-italic= moment(post.date).format('DD.MM.YYYY')
-        small
-            a(href="#") #{post.theme.themeName}
+        div
+            form(action="/")
+            small
+                a(href="#") #{post.theme.themeName}
         p !{post.text}
             
         hr

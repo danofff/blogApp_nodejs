@@ -6,4 +6,4 @@ const themeSchema = new Schema({
     themeName: String
 });
 
-module.exports = mongoose.model('theme', themeSchema);
+module.exports = mongoose.model('Theme', themeSchema);
