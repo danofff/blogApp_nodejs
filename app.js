@@ -6,10 +6,10 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require('path');
 const sanitizer = require('express-sanitizer');
-const blogRoutes = require('./routes/blog');
-
 
 //require routes
+const blogRoutes = require('./routes/blog');
+const themeRoutes = require('./routes/theme');
 const errorController = require('./controllers/errorController');
 
 
@@ -24,6 +24,7 @@ app.locals.moment = require('moment');
 
 //app routes
 app.use(blogRoutes);
+app.use('/theme', themeRoutes);
 app.use(errorController.get404);
 
 mongoose

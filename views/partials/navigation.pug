@@ -14,6 +14,10 @@
                     a.nav-link(href='/') Домой
                 li.nav-item(class=(path==='/add-post' ? 'active' : ''))
                     a.nav-link(href='/add-post') Написать
+                li.nav-item.dropdown
+                    a.nav-link.dropdown-toggle(href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
+                    .dropdown-menu(aria-labelly="navbarDropDown")
+                        a.dropdown-item(href="/theme/add-theme") Добавить тему
             
             a.btn.btn-outline-light(href="/login") Войти
             a.btn.btn-outline-light.mb-3.mt-3.ml-3(href="/register") Регистрация

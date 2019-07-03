@@ -1,0 +1,14 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    .pageMainHeader.mt-5
+        h3 Форма создания темы
+    form(action="/theme/add-theme" method="POST")
+        .form-group
+            label(for="themeName") Название темы:
+                span.star *
+            input.form-control(type="text", name="themeName" id="themeName" placeholder="Название темы" required)      
+        button.btn.btn-success(type="submit") Добавить тему
+
+include ../partials/foot.pug
