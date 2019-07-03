@@ -5,6 +5,7 @@ const express = require ("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const path = require('path');
+const sanitizer = require('express-sanitizer');
 const blogRoutes = require('./routes/blog');
 
 
@@ -17,13 +18,21 @@ const app = express();
 app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(sanitizer());
+app.locals.moment = require('moment');
 
 
 //app routes
 app.use(blogRoutes);
 app.use(errorController.get404);
 
-
-app.listen(port, ()=>{
-    console.log('blog app is started!');
-});
+mongoose
+    .connect('mongodb://localhost:27017/blogapp', {useNewUrlParser: true} )
+    .then(result => {
+        app.listen(port, ()=>{
+            console.log('blog app is started');
+        }); 
+    })
+    .catch( err => {
+        console.log(err);
+    });

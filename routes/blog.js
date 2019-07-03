@@ -6,8 +6,14 @@ const blogController = require('../controllers/blogController');
 
 const router = express.Router();
 
-// /add-record GET
+// / -show all posts
+router.get('/', blogController.getAllPosts);
+
+// /add-post GET
 router.get('/add-post', blogController.getAddPost);
+
+// /add-post POST
+router.post('/add-post', blogController.postAddPost);
 
 
 module.exports = router;

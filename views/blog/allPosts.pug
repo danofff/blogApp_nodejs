@@ -1,0 +1,14 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    each post in posts
+        h2 #{post.title}
+        small.text-muted.font-italic= moment(post.date).format('DD.MM.YYYY')
+        small
+            a(href="#") #{post.theme.themeName}
+        p !{post.text}
+            
+        hr
+
+include ../partials/foot.pug 

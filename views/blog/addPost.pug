@@ -13,11 +13,8 @@ include ../partials/navigation.pug
         .form-group
             label(for="theme") Тема поста:
             select.form-control(name="theme" id="theme" placeholder="выберете тему поста")
-               option(value="1") Тема1
-               option(value="2") Тема2
-               option(value="3") Тема3
-               option(value="4") Тема4
-               option(value="5") Тема5
+                each theme in themes
+                 option(value=theme._id) #{theme.themeName}
         .form-group
             label(for="text") Текст:
             textarea.form-control(name="text", id="text" rows="10")
