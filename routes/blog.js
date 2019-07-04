@@ -15,5 +15,9 @@ router.get('/add-post', blogController.getAddPost);
 // /add-post POST
 router.post('/add-post', blogController.postAddPost);
 
+// /theme/:theme GET
+router.get('/theme/:theme', blogController.getPostsByTheme);
+router.get('/:post', blogController.getPost)
+
 
 module.exports = router;

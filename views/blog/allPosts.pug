@@ -3,14 +3,15 @@ include ../partials/navigation.pug
 
 .container
     each post in posts
+        //- a.postHeaderReference(href="/"+post._id)
         h2 #{post.title}
         small.text-muted.font-italic= moment(post.date).format('DD.MM.YYYY')
         div
             form(action="/")
             small
-                a(href="#") #{post.theme.themeName}
+                a(href="/posts/theme/"+post.theme._id) #{post.theme.themeName}
         p !{post.text}
-            
+        a.btn.btn-outline-dark.btn-sm(href="/posts/"+post._id) Читать &rarr;
         hr
 
 include ../partials/foot.pug 

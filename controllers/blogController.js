@@ -51,3 +51,39 @@ exports.postAddPost = (req, res, next) => {
             res.redirect('/error')
         })
 }
+
+exports.getPostsByTheme = (req, res, next) => {
+    const themeId = req.params.theme;
+
+    Post.find({theme:themeId})
+        .populate('theme')
+        .then(posts => {
+            res.render('blog/allPosts', {
+                pageTitle: 'All posts',
+                path: '/',
+                posts: posts
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            redirect('/error');
+        });
+}
+
+exports.getPost = (req, res, next) => {
+    const postId = req.params.post;
+    console.log(postId);
+    Post.findById(postId)
+        .populate('theme')
+        .then(post => {
+            res.render('blog/singlePost', {
+                pageTitle: post.title,
+                path: '/',
+                post: post
+            });
+        })
+        .catch(error => {
+            console.log(err);
+            redirect('/error');
+        });
+}

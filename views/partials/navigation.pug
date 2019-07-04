@@ -10,11 +10,12 @@
             span.navbar-toggler-icon
         div.collapse.navbar-collapse(id="navbarSupportedContent")
             ul.navbar-nav.mr-auto
-                li.nav-item(class=(path==='/' ? 'active' : ''))
+                li.nav-item(class=(path==='/posts' ? 'active' : ''))
                     a.nav-link(href='/') Домой
-                li.nav-item(class=(path==='/add-post' ? 'active' : ''))
-                    a.nav-link(href='/add-post') Написать
-                li.nav-item.dropdown
+                li.nav-item(class=(path==='/posts/add-post' ? 'active' : ''))
+                    a.nav-link(href='/posts/add-post') Написать
+            ul.navbar-nav.ml-auto
+                li.nav-item.dropdown.ml-auto
                     a.nav-link.dropdown-toggle(href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
                     .dropdown-menu(aria-labelly="navbarDropDown")
                         a.dropdown-item(href="/theme/add-theme") Добавить тему

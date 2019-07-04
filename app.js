@@ -23,7 +23,10 @@ app.locals.moment = require('moment');
 
 
 //app routes
-app.use(blogRoutes);
+app.get('/', (req, res, next) => {
+    res.redirect('/posts/');
+});
+app.use('/posts/', blogRoutes);
 app.use('/theme', themeRoutes);
 app.use(errorController.get404);
 

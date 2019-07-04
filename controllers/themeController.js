@@ -1,4 +1,5 @@
 const Theme = require('../models/Theme');
+const Post = require('../models/Post')
 
 exports.getThemeAdd = (req, res, next) => {
     res.render('theme/addTheme.pug', {

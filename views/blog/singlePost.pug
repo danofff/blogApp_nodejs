@@ -1,0 +1,15 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    //- a.postHeaderReference(href="/"+post._id)
+    h2 #{post.title}
+    small.text-muted.font-italic= moment(post.date).format('DD.MM.YYYY')
+    div
+        form(action="/")
+        small
+            a(href="/posts/theme/"+post.theme._id) #{post.theme.themeName}
+    p !{post.text}
+    hr
+
+include ../partials/foot.pug 
