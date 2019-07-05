@@ -7,7 +7,7 @@ exports.getAllPosts = (req, res, next) => {
         .then(posts => {
             res.render('blog/allPosts', {
                 pageTitle: 'All posts',
-                path: '/',
+                path: '/posts',
                 posts: posts
             });
         })
@@ -22,7 +22,7 @@ exports.getAddPost = (req, res, next) => {
         .then(themes => {
             res.render('blog/addPost', {
                 pageTitle: 'Add Post',
-                path: '/add-post',
+                path: '/posts/add-post',
                 themes: themes
             });
         })
@@ -72,7 +72,6 @@ exports.getPostsByTheme = (req, res, next) => {
 
 exports.getPost = (req, res, next) => {
     const postId = req.params.post;
-    console.log(postId);
     Post.findById(postId)
         .populate('theme')
         .then(post => {
@@ -86,4 +85,56 @@ exports.getPost = (req, res, next) => {
             console.log(err);
             redirect('/error');
         });
+}
+exports.getEditPost = (req, res, next) => {
+    const postId = req.params.post;
+    Post.findById(postId)
+        .populate('theme')
+        .then(post => {
+            Theme.find()
+            .then(themes => {
+                res.render('blog/editPost', {
+                    pageTitle: `Edit ${post.title}`,
+                    path: `/posts/edit`,
+                    post: post, 
+                    themes: themes
+                });
+            })
+            .catch(err => {
+                console.log(error);
+                res.redirect('/');
+            });
+            })
+        .catch(error => {
+            console.log(error);
+            res.redirect(`/posts/${post._id}`);
+        });
+}
+
+exports.postEditPost = (req, res, next) =>{
+    const postId = req.body.postId;
+    const title = req.body.title;
+    const theme = req.body.theme;
+    const text = req.body.text;
+    Post.findById(postId).
+        then(post => {
+            post.title= title;
+            post.theme=theme;
+            post.text=text;
+            post.save();
+            res.render('blog/singlePost', {
+                pageTitle: post.title,
+                path: '/',
+                post: post
+            });
+        })
+        .catch(error => {
+            console.log(error);
+            res.render('blog/singlePost', {
+                pageTitle: post.title,
+                path: '/',
+                post: post
+            });
+        })
+
 }

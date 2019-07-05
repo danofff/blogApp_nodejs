@@ -10,6 +10,12 @@ include ../partials/navigation.pug
         small
             a(href="/posts/theme/"+post.theme._id) #{post.theme.themeName}
     p !{post.text}
-    hr
+    div
+        form.mr-2.mb-2(action=`/posts/${post._id}/edit`, method="get" style="display: inline-block")
+            button.btn.btn-outline-secondary.btn-sm(type="submin") Редактировать 
+                i.far.fa-edit
+        form(action=`/posts/${post._id}/edit`, method="get" style="display: inline-block")
+            button.btn.btn-outline-danger.btn-sm(type="submin") Удалить 
+                i.fas.fa-trash-alt
 
 include ../partials/foot.pug 

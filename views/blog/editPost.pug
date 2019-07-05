@@ -1,0 +1,28 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    .pageMainHeader.mt-5
+        h3 Форма редактирования публикации
+
+    form(action="/posts/"+post._id+"/edit", method="POST")
+        input(type="hidden" name="postId" value=post._id)
+        .form-group
+            label(for="title") Заголовок поста:
+                span.star *
+            input.form-control(type="text", name="title" id="title" placeholder="Заголовок" required value=post.title)
+            small.form-text.text-muted Заголовок должен отражать смысл публикации
+        .form-group
+            label(for="theme") Тема поста:
+            select.form-control(name="theme" id="theme" placeholder="выберете тему поста")
+                each theme in themes
+                    if theme.themeName === post.theme.themeName
+                        option(value=theme._id selected="selected") #{theme.themeName}
+                    else
+                        option(value=theme._id) #{theme.themeName}
+        .form-group
+            label(for="text") Текст:
+            textarea.form-control(name="text", id="text" rows="10") !{post.text}
+        button.btn.btn-success(type="submit") Редактировать
+
+include ../partials/foot.pug

@@ -17,7 +17,15 @@ router.post('/add-post', blogController.postAddPost);
 
 // /theme/:theme GET
 router.get('/theme/:theme', blogController.getPostsByTheme);
-router.get('/:post', blogController.getPost)
+
+// /posts/:post GET single post
+router.get('/:post', blogController.getPost);
+
+// /posts/:post/edit GET edit post
+router.get('/:post/edit', blogController.getEditPost);
+
+// /posts/:post/edit POST edit post
+router.post('/:post/edit', blogController.postEditPost);
 
 
 module.exports = router;
