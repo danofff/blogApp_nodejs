@@ -12,6 +12,7 @@ const postSchema = new Schema({
        ref: "Theme",
        required: true
     },
+    preview: String,
     text: String,
     date: {
         type: Date,

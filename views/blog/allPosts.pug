@@ -10,7 +10,7 @@ include ../partials/navigation.pug
             form(action="/")
             small
                 a(href="/posts/theme/"+post.theme._id) #{post.theme.themeName}
-        p !{post.text}
+        p !{post.preview}
         a.btn.btn-outline-dark.btn-sm(href="/posts/"+post._id) Читать &rarr;
         hr
 

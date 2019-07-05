@@ -22,7 +22,9 @@ include ../partials/navigation.pug
                         option(value=theme._id) #{theme.themeName}
         .form-group
             label(for="text") Текст:
-            textarea.form-control(name="text", id="text" rows="10") !{post.text}
-        button.btn.btn-success(type="submit") Редактировать
+            textarea.form-control(name="text", id="text" rows="20") !{post.text}
+        button.btn.btn-outline-success.btn-sm.mr-2.mb-2(type="submit") Редактировать 
+            i.far.fa-edit
+        a.btn.btn-outline-danger.btn-sm.mb-2(href="/posts/"+post._id) Отмена &#10005;
 
 include ../partials/foot.pug

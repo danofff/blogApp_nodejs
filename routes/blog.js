@@ -27,5 +27,6 @@ router.get('/:post/edit', blogController.getEditPost);
 // /posts/:post/edit POST edit post
 router.post('/:post/edit', blogController.postEditPost);
 
-
+// /posts/:post/delete POST delete post
+router.post('/:post/delete', blogController.postDeletePost);
 module.exports = router;

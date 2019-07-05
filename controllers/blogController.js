@@ -2,7 +2,7 @@ const Post = require('../models/Post');
 const Theme = require('../models/Theme');
 
 exports.getAllPosts = (req, res, next) => {
-    Post.find()
+    Post.find().select('title date preview')
         .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
@@ -35,10 +35,13 @@ exports.getAddPost = (req, res, next) => {
 exports.postAddPost = (req, res, next) => {
     const title = req.body.title;
     const theme = req.body.theme;
-    const text = req.body.text;
+    let postText = req.body.text;
+    const preview = postText.substring(0, postText.indexOf('[cut]'));
+    const text = postText.replace('[cut]', '');
     const post = new Post({
        title: title,
        theme: theme,
+       preview: preview,
        text: text 
     });
     post.save()
@@ -77,12 +80,12 @@ exports.getPost = (req, res, next) => {
         .then(post => {
             res.render('blog/singlePost', {
                 pageTitle: post.title,
-                path: '/',
+                path: '/posts/post',
                 post: post
             });
         })
         .catch(error => {
-            console.log(err);
+            console.log(error);
             redirect('/error');
         });
 }
@@ -112,14 +115,17 @@ exports.getEditPost = (req, res, next) => {
 }
 
 exports.postEditPost = (req, res, next) =>{
-    const postId = req.body.postId;
+    const postId = req.params.post;
     const title = req.body.title;
     const theme = req.body.theme;
-    const text = req.body.text;
+    let postText = req.body.text;
+    const preview = postText.substring(0, postText.indexOf('[cut]'));
+    const text = postText.replace('[cut]', '');
     Post.findById(postId).
         then(post => {
             post.title= title;
             post.theme=theme;
+            post.preview=preview;
             post.text=text;
             post.save();
             res.render('blog/singlePost', {
@@ -135,6 +141,18 @@ exports.postEditPost = (req, res, next) =>{
                 path: '/',
                 post: post
             });
-        })
+        });
+}
 
+exports.postDeletePost = (req, res, next) => {
+    const postId = req.params.post;
+    Post.deleteOne({_id: postId}, error => {
+        if(error){
+            console.log(error);
+            res.redirect('/posts');
+        }
+        else{
+            res.redirect('/posts')
+        }
+    });
 }
