@@ -1,0 +1,21 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    .signupForm
+        h3.pageMainHeader.mt-5 Восстановить пароль
+        if message
+            .alert.alert-danger(role="alert") #{message}
+        form(action="/reset" method="POST")
+            .form-group
+                label(for="login") Логин:
+                    span.star *
+                input.form-control(type="text", name="login" id="login" placeholder="Ваш логин" required)
+            .form-group
+                label(for="Email") Email:
+                    span.star *
+                input.form-control(type="email", name="email" id="email" placeholder="Ваша почта" required)
+            input(type="hidden", name='_csrf' value=csrfToken)            
+            button.btn.btn-outline-success.btn-sm(type="submit") Восстановить
+
+include ../partials/foot.pug

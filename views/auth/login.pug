@@ -1,0 +1,21 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    .signupForm
+        h3.pageMainHeader.mt-5 Войти
+        if message
+            .alert.alert-danger(role="alert") #{message}
+        form(action="/login" method="POST")
+            .form-group
+                label(for="login") Логин:
+                    span.star *
+                input.form-control(type="text", name="login" id="login" placeholder="Ваш логин" required)
+            .form-group
+                label(for="password") Пароль:
+                    span.star *
+                input.form-control(type="password", name="password" id="password" placeholder="Пароль" required)
+            input(type="hidden", name='_csrf' value=csrfToken)            
+            button.btn.btn-outline-success.btn-sm(type="submit") Войти
+
+include ../partials/foot.pug

@@ -18,7 +18,8 @@ exports.getAllPosts = (req, res, next) => {
 }
 
 exports.getAddPost = (req, res, next) => {
-    Theme.find()
+    if(req.session.user){
+        Theme.find()
         .then(themes => {
             res.render('blog/addPost', {
                 pageTitle: 'Add Post',
@@ -30,6 +31,11 @@ exports.getAddPost = (req, res, next) => {
             console.log(error);
             res.redirect('/');
         });
+    }
+    else{
+        req.flash('message', 'Для добавления поста необходимо авторизироваться');
+        res.redirect('/login');
+    }
 };
 
 exports.postAddPost = (req, res, next) => {
@@ -145,14 +151,21 @@ exports.postEditPost = (req, res, next) =>{
 }
 
 exports.postDeletePost = (req, res, next) => {
-    const postId = req.params.post;
-    Post.deleteOne({_id: postId}, error => {
-        if(error){
-            console.log(error);
-            res.redirect('/posts');
-        }
-        else{
-            res.redirect('/posts')
-        }
-    });
+    if(req.session.user){
+        const postId = req.params.post;
+        Post.deleteOne({_id: postId}, error => {
+            if(error){
+                console.log(error);
+                res.redirect('/posts');
+            }
+            else{
+                res.redirect('/posts')
+            }
+        });
+    }
+    else{
+        req.flash('message', 'Для удаления поста нужно авторизироваться');
+        const returnTo = req.originalUrl.replace('/delete', '');
+        res.redirect(returnTo);
+    }
 }

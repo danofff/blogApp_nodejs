@@ -1,3 +1,14 @@
 .postHeaderReference{
     text-decoration: none;
 }
+
+.star {
+    color: red;
+}
+
+.signupForm {
+    width: 30rem;
+    max-width: 80%;
+    align-self: center;
+    margin: auto;
+}

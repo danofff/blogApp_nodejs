@@ -10,17 +10,22 @@
             span.navbar-toggler-icon
         div.collapse.navbar-collapse(id="navbarSupportedContent")
             ul.navbar-nav.mr-auto
-                li.nav-item(class=(path==='/posts' ? 'active' : ''))
-                    a.nav-link(href='/') Домой
-                li.nav-item(class=(path==='/posts/add-post' ? 'active' : ''))
-                    a.nav-link(href='/posts/add-post') Написать
+                if isAuthenticated
+                    li.nav-item(class=(path==='/posts/add-post' ? 'active' : ''))
+                        a.nav-link(href='/posts/add-post') Написать
             ul.navbar-nav.ml-auto
-                li.nav-item.dropdown.ml-auto
-                    a.nav-link.dropdown-toggle(href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
-                    .dropdown-menu(aria-labelly="navbarDropDown")
-                        a.dropdown-item(href="/theme/add-theme") Добавить тему
-            
-            a.btn.btn-outline-light.btn-sm(href="/login") Войти 
-                i.far.fa-user
-            a.btn.btn-outline-light.btn-sm.mb-2.mt-2.ml-2(href="/register") Регистрация 
-                i.fas.fa-sign-in-alt
+                if isAuthenticated
+                    li.nav-item.dropdown.ml-auto
+                        a.nav-link.dropdown-toggle(href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
+                        .dropdown-menu(aria-labelly="navbarDropDown")
+                            a.dropdown-item(href="/theme/add-theme") Добавить тему
+            if !isAuthenticated
+                a.btn.btn-outline-light.btn-sm.mb-2.mt-2.mr-2(href="/signup") Регистрация 
+                    i.far.fa-user
+                a.btn.btn-outline-light.btn-sm(href="/login") Войти 
+                    i.fas.fa-sign-in-alt
+            else
+                form.logoutform(action="/logout" method="POST")
+                    input(type="hidden" name="_csrf" value=csrfToken)
+                    button.btn.btn-outline-light.btn-sm.ml-2.mt-2.mb-2(type="submit") Выйти 
+                        i.fas.fa-sign-out-alt
