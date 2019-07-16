@@ -1,8 +1,10 @@
 const Post = require('../models/Post');
 const Theme = require('../models/Theme');
+const Comment = require('../models/Comment');
+const mongoose = require('mongoose');
 
 exports.getAllPosts = (req, res, next) => {
-    Post.find().select('title date preview')
+    Post.find({}, 'title date preview author')
         .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
@@ -44,11 +46,17 @@ exports.postAddPost = (req, res, next) => {
     let postText = req.body.text;
     const preview = postText.substring(0, postText.indexOf('[cut]'));
     const text = postText.replace('[cut]', '');
+    const author = {
+        id: req.session.user._id,
+        username: req.session.user.login
+    };
     const post = new Post({
        title: title,
        theme: theme,
        preview: preview,
-       text: text 
+       text: text,
+       author: author,
+       comments: []
     });
     post.save()
         .then(result => {
@@ -63,8 +71,28 @@ exports.postAddPost = (req, res, next) => {
 
 exports.getPostsByTheme = (req, res, next) => {
     const themeId = req.params.theme;
-
     Post.find({theme:themeId})
+        .populate('theme')
+        .then(posts => {
+            res.render('blog/allPosts', {
+                pageTitle: 'All posts',
+                path: '/',
+                posts: posts
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            redirect('/error');
+        });
+}
+exports.getPostsByAuthor = (req, res, next) => {
+    const authorId = mongoose.Types.ObjectId(req.params.authorId);
+    const username = req.params.author;
+    const author = {
+        id: authorId,
+        username: username
+    };
+    Post.find({author: author})
         .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
@@ -80,14 +108,18 @@ exports.getPostsByTheme = (req, res, next) => {
 }
 
 exports.getPost = (req, res, next) => {
+    let message = req.flash('message');
+    message = message.length>0? message: null;
     const postId = req.params.post;
     Post.findById(postId)
         .populate('theme')
+        .populate('comments')
         .then(post => {
             res.render('blog/singlePost', {
                 pageTitle: post.title,
                 path: '/posts/post',
-                post: post
+                post: post,
+                message: message
             });
         })
         .catch(error => {
@@ -96,28 +128,42 @@ exports.getPost = (req, res, next) => {
         });
 }
 exports.getEditPost = (req, res, next) => {
-    const postId = req.params.post;
-    Post.findById(postId)
-        .populate('theme')
-        .then(post => {
-            Theme.find()
-            .then(themes => {
-                res.render('blog/editPost', {
-                    pageTitle: `Edit ${post.title}`,
-                    path: `/posts/edit`,
-                    post: post, 
-                    themes: themes
-                });
-            })
-            .catch(err => {
+    if(req.session.user){
+        const postId = req.params.post;
+        Post.findById(postId)
+            .populate('theme')
+            .then(post => {
+                if(post.author.id.equals(req.session.user._id)||req.session.user.role==='admin'){
+                    Theme.find()
+                    .then(themes => {
+                        res.render('blog/editPost', {
+                            pageTitle: `Edit ${post.title}`,
+                            path: `/posts/edit`,
+                            post: post, 
+                            themes: themes
+                        });
+                    })
+                    .catch(err => {
+                        console.log(error);
+                        res.redirect('/');
+                    });
+                }
+                else{
+                    req.flash('message', 'Вы не можете редактировать этот пост');
+                    const returnTo = req.originalUrl.replace('/edit', '');
+                    res.redirect(returnTo);
+                }
+                })
+            .catch(error => {
                 console.log(error);
-                res.redirect('/');
+                res.redirect(`/posts/${post._id}`);
             });
-            })
-        .catch(error => {
-            console.log(error);
-            res.redirect(`/posts/${post._id}`);
-        });
+    }
+    else{
+        req.flash('message', 'Для редактирования поста вы должны авторизироваться');
+        const returnTo = req.originalUrl.replace('/edit', '');
+        res.redirect(returnTo);
+    }
 }
 
 exports.postEditPost = (req, res, next) =>{
@@ -163,9 +209,59 @@ exports.postDeletePost = (req, res, next) => {
             }
         });
     }
-    else{
+    else {
         req.flash('message', 'Для удаления поста нужно авторизироваться');
         const returnTo = req.originalUrl.replace('/delete', '');
         res.redirect(returnTo);
     }
+}
+
+
+//response is a json
+exports.postAddComment = (req, res, next) => {
+    const postId = req.params.post
+    Post.findById(postId)
+     .then(post => {
+         if(post){
+             const commentText = req.body.commentText;
+             const commentAuthorId = req.session.user._id;
+             const commentAuthorUsername = req.session.user.login;
+             const newComment = new Comment ({
+                 text: commentText,
+                 author:{
+                     id: commentAuthorId,
+                     username: commentAuthorUsername
+                 }
+             });
+             newComment.save()
+                .then(result => {
+                    post.comments.push(newComment);
+                    post.save()
+                        .then(result => {
+                            //here we should send a response
+                            res.json(newComment);
+                        });                   
+                });
+         }
+         else {
+             res.json({message_error: 'Нельзя добавить комментарий к несущеструющему посту'});
+         }
+     })
+     .catch(error => {
+         console.log(error);
+         res.json({message_error: 'Что-то пошло не так, нельзя добавить комментарий'});
+     });
+}
+
+exports.postDeleteComment = (req, res, next) => {
+     const commentId = req.params.comment;
+     const postId = req.params.post;
+     Comment.findByIdAndRemove(commentId)
+        .then(result => {
+            res.redirect(`/posts/${postId}`);
+        })
+        .catch(error => {
+            console.log(error);
+            res.redirect('back');
+        })
 }

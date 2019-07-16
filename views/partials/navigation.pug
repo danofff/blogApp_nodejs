@@ -1,5 +1,5 @@
 .container
-    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+    nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.mb-4
         a.navbar-brand(href="/") Free Toughts
         button.navbar-toggler(type="button" 
                             data-toggle="collapse" 
@@ -14,7 +14,7 @@
                     li.nav-item(class=(path==='/posts/add-post' ? 'active' : ''))
                         a.nav-link(href='/posts/add-post') Написать
             ul.navbar-nav.ml-auto
-                if isAuthenticated
+                if isAuthenticated && role==="admin"
                     li.nav-item.dropdown.ml-auto
                         a.nav-link.dropdown-toggle(href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
                         .dropdown-menu(aria-labelly="navbarDropDown")

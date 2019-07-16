@@ -1,3 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Literata:400,400i,600,700&display=swap');
+
+body{
+    font-family: 'Literata' !important;
+}
 .postHeaderReference{
     text-decoration: none;
 }
@@ -11,4 +16,12 @@
     max-width: 80%;
     align-self: center;
     margin: auto;
+}
+
+.commentText{
+    width: 100%;
+}
+
+.deleteCommentForm{
+    display: inline-block;
 }

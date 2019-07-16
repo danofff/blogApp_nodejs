@@ -18,7 +18,8 @@ const userSchema = new Schema({
         required: true
     },
     resetToken: String,
-    resetTokenExpiration: Date
+    resetTokenExpiration: Date,
+    role: String
 });
 
 module.exports = mongoose.model('User', userSchema);

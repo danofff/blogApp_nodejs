@@ -5,9 +5,12 @@ const nodemailerTransport = require('nodemailer-sendgrid-transport');
 
 const User = require('../models/user');
 
+const variables = (require('../variables'));
+const apikey = variables.sendgridkey();
+
 const transporter = nodemailer.createTransport(nodemailerTransport({
     auth: {
-      api_key: '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'
+      api_key: apikey
     }
   }));
 
@@ -26,6 +29,7 @@ exports.postSignup = (req, res, next) => {
   const email = req. body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+  const role = 'blogger';
 
   User.findOne({login: login})
     .then(user => {
@@ -42,7 +46,8 @@ exports.postSignup = (req, res, next) => {
           const newUser = new User({
             login: login,
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            role: role
           });
           return newUser.save();
         });
@@ -176,13 +181,19 @@ exports.getNewPassword = (req, res, next) => {
     .then(user => {
       let message = req.flash('message');
       message = message.length>0? message: null;
-      res.render('auth/newPassword', {
-        path: '/new-password',
-        pageTitle: 'Новый пароль',
-        userId: user._id.toString(),
-        passwordToken: token,
-        message: message
-      });
+      if(user){
+        res.render('auth/newPassword', {
+          path: '/new-password',
+          pageTitle: 'Новый пароль',
+          userId: user._id.toString(),
+          passwordToken: token,
+          message: message
+        });
+      }
+      else{
+        req.flash('message', 'Время восстановления пароля вышло');
+        res.redirect('/reset');
+      }
     })
     .catch(error => {
       console.log(error);

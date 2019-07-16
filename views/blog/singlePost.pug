@@ -1,9 +1,9 @@
 include ../partials/head.pug
 include ../partials/navigation.pug
 
-
 .container
-
+    if message
+        .alert.alert-danger.mt-3(role="alert") #{message}
     .modal.fade(id="deleteModalCenter" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true")
         .modal-dialog.modal-dialog-centered(role="document")
             .modal-content
@@ -20,16 +20,56 @@ include ../partials/navigation.pug
                         button.btn.btn-outline-success.btn-sm(type="submit") Да
                     
     h2 #{post.title}
-    small.text-muted.font-italic= moment(post.date).format('DD.MM.YYYY')
+    small.text-muted.font-italic
+        a(href=`/posts/author/${post.author.username}/${post.author.id.toString()}` title=`показать все посты ${post.author.username}`) #{post.author.username}
+    small.text-muted.font-italic  - #{moment(post.date).format('DD.MM.YYYY')}
     div
         form(action="/")
         small
-            a(href="/posts/theme/"+post.theme._id) #{post.theme.themeName}
+            a(href=`/posts/theme/${post.theme._id}` title=`показать все посты по теме ${post.theme.themeName}`) #{post.theme.themeName}
     p !{post.text}
-    div
-        form.mr-2.mb-2(action=`/posts/${post._id}/edit`, method="GET" style="display: inline-block")
-            input(type="hidden", name="_csrf" value=csrfToken)
-            button.btn.btn-outline-secondary.btn-sm(type="submin") Редактировать 
-        button.btn.btn-outline-danger.btn-sm(type="button" data-toggle="modal" data-target="#deleteModalCenter") Удалить 
+    if post.author.id.equals(userId) || role==="admin"
+        div
+            form.mr-2.mb-2(action=`/posts/${post._id}/edit`, method="GET" style="display: inline-block")
+                input(type="hidden", name="_csrf" value=csrfToken)
+                button.btn.btn-outline-secondary.btn-sm(type="submin") Редактировать 
+                
+            button.btn.btn-outline-danger.btn-sm(type="button" data-toggle="modal" data-target="#deleteModalCenter") Удалить 
+    hr
+    h4 Комментарии
+    .row
+        .col-sm
+            .form-container.p-3.bg-light
+                form(action=`/posts/${post._id}/comments/addnew` method="POST" id='commentForm')
+                    textarea.commentText(name="commentText" rows="3" id="commentText" disabled=isAuthenticated? false: true)
+                    if isAuthenticated
+                        small.text-muted Комментарии модерируются, пишите корректно и дружелюбно
+                    else
+                        small.text-danger Для добавления комментария нужно авторизироваться
+                    br
+                    input(type="hidden" name="_csrf" value=csrfToken)
+                .text-right
+                    button.btn.btn-outline-success.btn-sm.mt-2(id="sendCommentButton" disabled=isAuthenticated? false: true) Отправить
+                .p-1.mt-2(style="display: none" id="commentWarning")
 
+            hr
+            .comments-container
+                each comment in post.comments
+                    .row
+                        .col-sm
+                            .d-flex.justify-content-between
+                                strong.text-left #{comment.author.username}
+                                span.text-right #{moment(comment.date).format('DD.MM.YYYY, hh:mm')}
+                    .row
+                        .col-sm
+                                p #{comment.text}
+                                .text-right
+                                    a.btn.btn-light.btn-sm.mr-1(href=`/posts/${post._id}/comments/${comment._id}/edit` title="Редактировать")
+                                        i.far.fa-edit
+                                    form.deleteCommentForm(action=`/posts/${post._id}/comments/${comment._id}/delete` method="POST")
+                                        input(type="hidden", name="_csrf" value=csrfToken)
+                                        button.btn.btn-light.btn-sm(type="submit" title="Удалить")
+                                            i.fas.fa-trash-alt
+                    hr
+                                          
 include ../partials/foot.pug 

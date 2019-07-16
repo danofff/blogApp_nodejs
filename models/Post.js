@@ -9,7 +9,7 @@ const postSchema = new Schema({
     },
     theme: {
        type: Schema.Types.ObjectId,
-       ref: "Theme",
+       ref: 'Theme',
        required: true
     },
     preview: String,
@@ -17,7 +17,24 @@ const postSchema = new Schema({
     date: {
         type: Date,
         default: Date.now()
-    }
+    },
+    author: {
+        id:{
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        username: {
+            type: String,
+            required: true
+        }
+    },
+    comments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Comment'
+        }
+    ]
 });
 
 module.exports = mongoose.model('Post', postSchema);

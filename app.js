@@ -40,6 +40,8 @@ app.locals.moment = require('moment');
 
 app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
+    userId = req.session.user ? req.session.user._id: null;
+    role = req.session.user ? req.session.user.role: null;
     res.locals.csrfToken = req.csrfToken();
     next();
 });

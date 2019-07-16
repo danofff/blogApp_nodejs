@@ -18,6 +18,15 @@ router.post('/add-post', blogController.postAddPost);
 // /theme/:theme GET
 router.get('/theme/:theme', blogController.getPostsByTheme);
 
+// /author/:author GET
+router.get('/author/:author/:authorId', blogController.getPostsByAuthor);
+
+// /posts/:post/comments/addnew
+router.post('/:post/comments/addnew', blogController.postAddComment);
+
+// /posts/:post/comments/:comment/delete
+router.post('/:post/comments/:comment/delete', blogController.postDeleteComment);
+
 // /posts/:post GET single post
 router.get('/:post', blogController.getPost);
 
@@ -29,4 +38,6 @@ router.post('/:post/edit', blogController.postEditPost);
 
 // /posts/:post/delete POST delete post
 router.post('/:post/delete', blogController.postDeletePost);
+
+
 module.exports = router;

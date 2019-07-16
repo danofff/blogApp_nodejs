@@ -19,6 +19,7 @@ include ../partials/navigation.pug
             .d-flex.justify-content-between.mb-2(style="width: 90%")
                 label(for="text") Текст:
             textarea.form-control(name="text", id="text" rows="20")
+        input(type="hidden", name="_csrf" value=csrfToken)
         button.btn.btn-outline-success.btn-sm(type="submit") Опубликовать
 
 include ../partials/foot.pug
