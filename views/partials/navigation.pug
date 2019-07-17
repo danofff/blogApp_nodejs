@@ -13,6 +13,10 @@
                 if isAuthenticated
                     li.nav-item(class=(path==='/posts/add-post' ? 'active' : ''))
                         a.nav-link(href='/posts/add-post') Написать
+                    li.nav-item(class=(path==='/posts/myposts' ? 'active' :''))
+                        a.nav-link(href='/posts/myposts') Мои посты
+                    li.nav-item(class=(path==='/posts/favorite' ? 'active' :''))
+                        a.nav-link(href='/posts/favorite') Избранные
             ul.navbar-nav.ml-auto
                 if isAuthenticated && role==="admin"
                     li.nav-item.dropdown.ml-auto

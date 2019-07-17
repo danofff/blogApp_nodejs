@@ -295,3 +295,29 @@ exports.postEditComment = (req, res, next) => {
             res.sendStatus(500);
         });
 }
+
+exports.getMyPosts = (req, res, next) =>{
+    if(!req.session.user){
+        req.flash('message', 'Для выполнения запроса нужно авторизироваться');
+        res.redirect('/posts');
+    }
+    const authorId = mongoose.Types.ObjectId(req.session.user._id);
+    const username = req.session.user.login;
+    const author = {
+        id: authorId,
+        username: username
+    };
+    Post.find({author: author})
+        .populate('theme')
+        .then(posts => {
+            res.render('blog/allPosts', {
+                pageTitle: `Посты ${username}`,
+                path: '/posts/myposts',
+                posts: posts
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            redirect('/error');
+        });
+}

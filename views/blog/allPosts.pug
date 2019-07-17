@@ -2,17 +2,27 @@ include ../partials/head.pug
 include ../partials/navigation.pug
 
 .container
-    each post in posts
-        h2 #{post.title}
-        small.text-muted.font-italic
-            a(href=`/posts/author/${post.author.username}/${post.author.id.toString()}` title=`показать все посты ${post.author.username}`) #{post.author.username}
-        small.text-muted.font-italic  - #{moment(post.date).format('DD.MM.YYYY')}
-        div
-            form(action="/")
-            small
-                a(href=`/posts/theme/${post.theme._id}` title=`показать все посты по теме ${post.theme.themeName}`) #{post.theme.themeName}
-        p !{post.preview}
-        a.btn.btn-outline-dark.btn-sm(href=`/posts/${post._id}`) Читать &rarr;
-        hr
+    if posts.length>0
+        each post in posts
+            h2 #{post.title}
+            small.text-muted.font-italic
+                a(href=`/posts/author/${post.author.username}/${post.author.id.toString()}` title=`показать все посты ${post.author.username}`) #{post.author.username}
+            small.text-muted.font-italic  - #{moment(post.date).format('DD.MM.YYYY')}
+            div
+                form(action="/")
+                small
+                    a(href=`/posts/theme/${post.theme._id}` title=`показать все посты по теме ${post.theme.themeName}`) #{post.theme.themeName}
+            p !{post.preview}
+            a.btn.btn-outline-dark.btn-sm(href=`/posts/${post._id}`) Читать &rarr;
+            hr
+    else
+        .jumbotron.jumbotron-fluid.text-center.p-4
+            if path ==='/'
+                h1 НЕТ ПОДХОДЯЩИХ ПОСТОВ
+            if path ==='/posts/myposts'
+                h1 У ВАС НЕТ СОБСТВЕННЫХ ПОСТОВ
+            if path ==='/posts/favorite'
+                h1 У ВАС НЕТ ИЗБРАННЫХ ПОСТОВ
+
 
 include ../partials/foot.pug 
