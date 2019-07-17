@@ -124,7 +124,7 @@ exports.getPost = (req, res, next) => {
         })
         .catch(error => {
             console.log(error);
-            redirect('/error');
+            res.redirect('/error');
         });
 }
 exports.getEditPost = (req, res, next) => {
@@ -220,6 +220,11 @@ exports.postDeletePost = (req, res, next) => {
 //response is a json
 exports.postAddComment = (req, res, next) => {
     const postId = req.params.post
+    if(!req.session.user){
+        req.flash('message', 'Для добавления комментария нужно авторизировться');
+        return res.redirect(`/posts/${postId}`);
+    }
+
     Post.findById(postId)
      .then(post => {
          if(post){
@@ -238,30 +243,55 @@ exports.postAddComment = (req, res, next) => {
                     post.comments.push(newComment);
                     post.save()
                         .then(result => {
-                            //here we should send a response
-                            res.json(newComment);
+                            res.render('partials/comment', {layout:false, comment:newComment, postId: postId});
                         });                   
                 });
          }
          else {
-             res.json({message_error: 'Нельзя добавить комментарий к несущеструющему посту'});
+             res.sendStatus(500);
          }
      })
      .catch(error => {
          console.log(error);
-         res.json({message_error: 'Что-то пошло не так, нельзя добавить комментарий'});
+         res.sendStatus(500);
      });
 }
 
 exports.postDeleteComment = (req, res, next) => {
+    const authorId = req.body.author;
+    const postId = req.params.post;
+
+    if(!req.session.user.role==='admin'){
+        req.flash('message', 'Вы не можете удалить этот комментарий');
+        return res.redirect(`/posts/${postId}`)
+    }
+    else if(!req.session.user._id.equals(authorId)) {
+        req.flash('message', 'Вы не можете удалить этот комментарий');
+        return res.redirect(`/posts/${postId}`)
+    }
      const commentId = req.params.comment;
-     const postId = req.params.post;
      Comment.findByIdAndRemove(commentId)
         .then(result => {
-            res.redirect(`/posts/${postId}`);
+            res.sendStatus(200);
         })
         .catch(error => {
             console.log(error);
             res.redirect('back');
         })
+}
+
+exports.postEditComment = (req, res, next) => {
+    const authorId = req.body.author;
+    const postId = req.params.post;
+    const commentId = req.params.comment;
+    Comment.findById(commentId)
+        .then(comment => {
+            comment.text = req.body.editedComment;
+            comment.date = Date.now();
+            comment.save();
+            res.send(comment.text);
+        })
+        .catch(error => {
+            res.sendStatus(500);
+        });
 }

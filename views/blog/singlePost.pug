@@ -34,8 +34,8 @@ include ../partials/navigation.pug
                 input(type="hidden", name="_csrf" value=csrfToken)
                 button.btn.btn-outline-secondary.btn-sm(type="submin") Редактировать 
                 
-            button.btn.btn-outline-danger.btn-sm(type="button" data-toggle="modal" data-target="#deleteModalCenter") Удалить 
-    hr
+            button.btn.btn-outline-danger.btn-sm(type="button" data-toggle="modal" data-target="#deleteModalCenter") Удалить
+    hr.commentFormDivider
     h4 Комментарии
     .row
         .col-sm
@@ -47,29 +47,41 @@ include ../partials/navigation.pug
                     else
                         small.text-danger Для добавления комментария нужно авторизироваться
                     br
-                    input(type="hidden" name="_csrf" value=csrfToken)
+                    input(type="hidden" name="_csrf" value=csrfToken id="formCsrf")
                 .text-right
                     button.btn.btn-outline-success.btn-sm.mt-2(id="sendCommentButton" disabled=isAuthenticated? false: true) Отправить
                 .p-1.mt-2(style="display: none" id="commentWarning")
 
             hr
-            .comments-container
+            .comments-container.bg-light
                 each comment in post.comments
-                    .row
-                        .col-sm
-                            .d-flex.justify-content-between
-                                strong.text-left #{comment.author.username}
-                                span.text-right #{moment(comment.date).format('DD.MM.YYYY, hh:mm')}
-                    .row
-                        .col-sm
-                                p #{comment.text}
-                                .text-right
-                                    a.btn.btn-light.btn-sm.mr-1(href=`/posts/${post._id}/comments/${comment._id}/edit` title="Редактировать")
-                                        i.far.fa-edit
-                                    form.deleteCommentForm(action=`/posts/${post._id}/comments/${comment._id}/delete` method="POST")
-                                        input(type="hidden", name="_csrf" value=csrfToken)
-                                        button.btn.btn-light.btn-sm(type="submit" title="Удалить")
-                                            i.fas.fa-trash-alt
-                    hr
-                                          
+                    .singleComment.px-3
+                        .row
+                            .col-sm
+                                .d-flex.justify-content-between
+                                    strong.text-left #{comment.author.username}
+                                    span.text-right #{moment(comment.date).format('DD.MM.YYYY, HH:mm')}
+                        .row
+                            .col-sm
+                                    p #{comment.text}
+                                    if isAuthenticated && comment.author.id.equals(userId) || role==='admin'
+                                        .text-right
+                                            button.edit.btn.btn-light.btn-sm.mr-1(title="Редактировать" data-target="#editCommentModal" data-path=`/posts/${post._id}/comments/${comment._id}/edit`)
+                                                i.far.fa-edit
+                                            form.deleteCommentForm(action=`/posts/${post._id}/comments/${comment._id}/delete` method="POST")
+                                                input(type="hidden", name="author" value=comment.author.id)
+                                                input(type="hidden", name="_csrf" value=csrfToken)
+                                            button.delete.btn.btn-light.btn-sm(title="Удалить")
+                                                i.fas.fa-trash-alt
+                                            .row.editFormDiv.mt-2(hidden="true")
+                                                .col-sm
+                                                    form.editForm(action=`/posts/${post._id}/comments/${comment._id}` method="POST")
+                                                        input(type="hidden", name="author" value=comment.author.id)
+                                                        input(type="hidden", name="_csrf" value=csrfToken)
+                                                        textarea.editCommentTextarea(name="editedComment")
+                                                    button.btn.btn-outline-danger.btn-sm.mt-1.mr-2.cancelEdit &#10005;
+                                                    button.btn.btn-outline-success.btn-sm.mt-1.submitEdit &#10003;
+
+                        
+                        hr      
 include ../partials/foot.pug 

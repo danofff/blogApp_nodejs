@@ -27,6 +27,9 @@ router.post('/:post/comments/addnew', blogController.postAddComment);
 // /posts/:post/comments/:comment/delete
 router.post('/:post/comments/:comment/delete', blogController.postDeleteComment);
 
+// /posts/:post/comments/:comment/edit
+router.post('/:post/comments/:comment/edit', blogController.postEditComment);
+
 // /posts/:post GET single post
 router.get('/:post', blogController.getPost);
 
@@ -38,6 +41,5 @@ router.post('/:post/edit', blogController.postEditPost);
 
 // /posts/:post/delete POST delete post
 router.post('/:post/delete', blogController.postDeletePost);
-
 
 module.exports = router;

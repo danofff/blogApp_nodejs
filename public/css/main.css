@@ -2,6 +2,7 @@
 
 body{
     font-family: 'Literata' !important;
+    color: #343A40 !important;
 }
 .postHeaderReference{
     text-decoration: none;
@@ -24,4 +25,13 @@ body{
 
 .deleteCommentForm{
     display: inline-block;
+}
+
+.commentFormDivider{
+    border-top: 2px solid #C0C0C0;
+}
+
+.editCommentTextarea{
+    width: 100%;
+    display: block;
 }
