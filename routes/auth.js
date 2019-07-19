@@ -33,4 +33,10 @@ router.get('/new-password/:token', authController.getNewPassword);
 // /new-password/ POST save a new password
 router.post('/new-password', authController.postNewPassword);
 
+// /changepassword GET change password form
+router.get('/changepassword', authController.getChangePassword);
+
+// /changepassword POST save changed password form
+router.post('/changepassword', authController.postChangePassword);
+
 module.exports = router;

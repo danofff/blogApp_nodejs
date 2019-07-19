@@ -42,6 +42,7 @@ app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
     userId = req.session.user ? req.session.user._id: null;
     role = req.session.user ? req.session.user.role: null;
+    login = req.session.user ? req.session.user.login: null;
     res.locals.csrfToken = req.csrfToken();
     next();
 });

@@ -34,7 +34,15 @@ const postSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Comment'
         }
-    ]
+    ],
+    ratedUsers: [
+        {
+            type: String
+        }
+    ],
+    rate: Number,
+    watched: Number,
+    favorite: Number
 });
 
 module.exports = mongoose.model('Post', postSchema);

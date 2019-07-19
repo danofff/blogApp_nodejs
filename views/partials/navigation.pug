@@ -20,7 +20,7 @@
             ul.navbar-nav.ml-auto
                 if isAuthenticated && role==="admin"
                     li.nav-item.dropdown.ml-auto
-                        a.nav-link.dropdown-toggle(href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
+                        a.nav-link.dropdown-toggle(href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Администрирование
                         .dropdown-menu(aria-labelly="navbarDropDown")
                             a.dropdown-item(href="/theme/add-theme") Добавить тему
             if !isAuthenticated
@@ -29,7 +29,12 @@
                 a.btn.btn-outline-light.btn-sm(href="/login") Войти 
                     i.fas.fa-sign-in-alt
             else
-                form.logoutform(action="/logout" method="POST")
-                    input(type="hidden" name="_csrf" value=csrfToken)
-                    button.btn.btn-outline-light.btn-sm.mt-2.mb-2(type="submit") Выйти 
-                        i.fas.fa-sign-out-alt
+                ul.navbar-nav
+                    li.nav-item.dropdown
+                        a.nav-link.dropdown-toggle(href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") #{login}  <i class="far fa-user"></i>
+                        .dropdown-menu.dropdown-menu-right(aria-labelly="navbarDropDown")
+                            a#chahgePassword.dropdown-item(href="/changepassword") Изменить пароль 
+                            form#logoutForm(action="/logout" method="POST")
+                                input(type="hidden" name="_csrf" value=csrfToken)
+                                button#logout.dropdown-item(type="submit") Выйти 
+                                    i.fas.fa-sign-out-alt

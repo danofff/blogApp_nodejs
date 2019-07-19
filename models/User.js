@@ -19,7 +19,13 @@ const userSchema = new Schema({
     },
     resetToken: String,
     resetTokenExpiration: Date,
-    role: String
+    role: String,
+    favoritePosts: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ]
 });
 
 module.exports = mongoose.model('User', userSchema);

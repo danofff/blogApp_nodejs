@@ -29,16 +29,51 @@ include ../partials/navigation.pug
             a(href=`/posts/theme/${post.theme._id}` title=`показать все посты по теме ${post.theme.themeName}`) #{post.theme.themeName}
     p !{post.text}
     if post.author.id.equals(userId) || role==="admin"
-        div
-            form.mr-2.mb-2(action=`/posts/${post._id}/edit`, method="GET" style="display: inline-block")
-                input(type="hidden", name="_csrf" value=csrfToken)
-                button.btn.btn-outline-secondary.btn-sm(type="submin") Редактировать 
+        .row.mt-2.display-flex
+            .col-6.justify-content-between
+                form.mr-2.mb-2(action=`/posts/${post._id}/edit`, method="GET" style="display: inline-block")
+                    input(type="hidden", name="_csrf" value=csrfToken)
+                    button.btn.btn-outline-secondary.btn-sm(type="submin") Редактировать 
+                    
+                button.btn.btn-outline-danger.btn-sm(type="button" data-toggle="modal" data-target="#deleteModalCenter") Удалить
+    #rateAlert.row.mt-2(hidden=true)
+        .col-12
+            .alert.alert-danger
+    #favoriteAlert.row.mt-2(hidden=true)
+        .col-12
+            .alert.alert-success
+    .row
+        .col-8.col-sm-6.col-lg-5
+            .bg-light.border.border-secondary.rounded.p-1.display-flex
+                if isAuthenticated
+                    form#ratePostForm(action=`/posts/${post._id}/vote`)
+                        input(type="hidden", name="_csrf" value=csrfToken)
+                        input(type="hidden", name="rateHandler" id="rateHandler" value="plus")
+                    .ml-auto.plusMinusContainer
+                        button#addMinusToPostButton.btn.btn-outline-danger.btn-sm(title="Поставить минус")
+                            i.fas.fa-minus
+                        button#addPlusToPostButton.btn.btn-outline-success.btn-sm.mx-2(title="Поставить плюс")
+                            i.fas.fa-plus
+                span.mx-3(title="Рейтинг")
+                    span#rate #{post.rate} 
+                    span &#11014;&#11015;
+                span.mr-3(title="Просмотрено") #{post.watched} 
+                    i.far.fa-eye
                 
-            button.btn.btn-outline-danger.btn-sm(type="button" data-toggle="modal" data-target="#deleteModalCenter") Удалить
+                if isAuthenticated
+                    span#addToFavorite.mr-3(title="Добавить в избранное") #{post.favorite} 
+                        i.far.fa-heart
+                        form#addToFavoriteForm(action=`/posts/${post._id}/favorite` method="POST")
+                            input(type="hidden", name="_csrf" value=csrfToken)
+                            input(type="hidden", name="favoriteHandler" id="favoriteHandler" value=post._id)
+                else
+                    span.mr-3(title="Добавлено в избранное") #{post.favorite}
+                        i.far.fa-heart
+
     hr.commentFormDivider
     h4 Комментарии
     .row
-        .col-sm
+        .col-12
             .form-container.p-3.bg-light
                 form(action=`/posts/${post._id}/comments/addnew` method="POST" id='commentForm')
                     textarea.commentText(name="commentText" rows="3" id="commentText" disabled=isAuthenticated? false: true)
@@ -57,12 +92,12 @@ include ../partials/navigation.pug
                 each comment in post.comments
                     .singleComment.px-3
                         .row
-                            .col-sm
+                            .col-12
                                 .d-flex.justify-content-between
                                     strong.text-left #{comment.author.username}
                                     span.text-right #{moment(comment.date).format('DD.MM.YYYY, HH:mm')}
                         .row
-                            .col-sm
+                            .col-12
                                     p #{comment.text}
                                     if isAuthenticated && comment.author.id.equals(userId) || role==='admin'
                                         .text-right

@@ -18,11 +18,23 @@ router.post('/add-post', blogController.postAddPost);
 // /posts/myposts GET user posts
 router.get('/myposts', blogController.getMyPosts);
 
+// /posts/favorite GET favorite posts
+router.get('/favorite', blogController.getFavoritePosts);
+
+//  /favorite/delete/:post POST delete post from favorite
+router.post('/favorite/delete/:post', blogController.postDeleteFromFavorite);
+
 // /theme/:theme GET
 router.get('/theme/:theme', blogController.getPostsByTheme);
 
-// /author/:author GET
+// /author/:author GET posts by author
 router.get('/author/:author/:authorId', blogController.getPostsByAuthor);
+
+// /:post/vote POST add rate to post
+router.post('/:post/vote', blogController.postAddRatePost);
+
+// /:post/favorite POST add post to favorite posts
+router.post('/:post/favorite', blogController.postAddToFavorite);
 
 // /posts/:post/comments/addnew
 router.post('/:post/comments/addnew', blogController.postAddComment);

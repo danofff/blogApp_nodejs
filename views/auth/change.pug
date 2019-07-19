@@ -1,0 +1,25 @@
+include ../partials/head.pug
+include ../partials/navigation.pug
+
+.container
+    .signupForm
+        h3.pageMainHeader.mt-5 Изменение пароля
+        if message
+            .alert.alert-danger(role="alert") #{message}
+        form(action="/changepassword" method="POST")
+            .form-group
+                label(for="oldPassword") Старый пароль:
+                    span.star *
+                input.form-control(type="password", name="oldPassword" id="oldPassword" placeholder="Старый пароль" required)
+            .form-group
+                label(for="password") Новый пароль:
+                    span.star *
+                input.form-control(type="password", name="password" id="password" placeholder="Новый пароль" required)
+            .form-group
+                label(for="confirmPassword") Подтвердить новый пароль:
+                    span.star *
+                input.form-control(type="password", name="confirmPassword" id="confirmPassword" placeholder="Повторите новый пароль" required)
+            input(type="hidden" name='_csrf' value=csrfToken)   
+            button.btn.btn-outline-success.btn-sm(type="submit") Обновить пароль
+
+include ../partials/foot.pug

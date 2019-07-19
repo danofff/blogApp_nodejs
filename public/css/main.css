@@ -35,3 +35,27 @@ body{
     width: 100%;
     display: block;
 }
+
+#ratePostForm{
+    display: inline;
+}
+
+.plusMinusContainer{
+    display: inline !important;
+}
+
+#addToFavorite{
+    cursor: pointer;
+}
+
+#addToFavoriteForm{
+    display: inline;
+}
+
+#deleteFormFavoriteForm{
+    display: inline;
+}
+
+#removeFromFavorite{
+    cursor: pointer;
+}

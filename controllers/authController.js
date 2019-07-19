@@ -47,7 +47,8 @@ exports.postSignup = (req, res, next) => {
             login: login,
             email: email,
             password: hashedPassword,
-            role: role
+            role: role,
+            favotirePosts:[]
           });
           return newUser.save();
         });
@@ -120,7 +121,7 @@ exports.postLogout = (req, res, next) => {
     if(error){
       console.log(error);
     }
-    res.redirect('/');
+    res.redirect('back');
   });
 };
 
@@ -163,7 +164,7 @@ exports.postReset = (req, res, next) => {
               <h3>Восстановление доступа к Free Toughts</h3>
               <p>Для восcтановления пораля кликните по ссылке ниже</p>
               <a href="http://localhost:3000/new-password/${token}">Восстановить пароль</a>
-              <p>Если вы не запрашиали восстановление пароля, просто проигнорируйте это письмо</p>
+              <p>Если вы не запрашивали восстановление пароля, просто проигнорируйте это письмо</p>
               `
             });
           });
@@ -224,6 +225,7 @@ exports.postNewPassword = (req, res, next) => {
       req.flash('message', 'Невозможно изменить пароль, попробуйте заново');
       return res.redirect('/reset');
     }
+
     resetUser = user;
     return bcrypt.hash(newPassword, 12);
   })
@@ -241,3 +243,55 @@ exports.postNewPassword = (req, res, next) => {
     res.redirect('/reset');
   });
 };
+
+exports.getChangePassword = (req, res, next) => {
+  let message = req.flash('message');
+  message = message.length>0? message: null;
+  res.render('auth/change', {
+    path: '/changepassword',
+    pageTitle: 'Изменение пароля',
+    message: message
+  });
+}
+
+exports.postChangePassword = (req, res, next) => {
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+
+  if(newPassword!==confirmPassword){
+    req.flash('message', 'Пароль и подтверждение пароля не совпадают');
+    return res.redirect('/changepassword')
+  }
+  let resetUser;
+  User.findById(req.session.user._id)
+  .then(user => {
+    if(!user){
+      req.flash('message', 'Невозможно изменить пароль, попробуйте заново');
+      return res.redirect('/changepassword');
+    }
+    bcrypt.compare(oldPassword, user.password)
+    .then(doMatch => {
+      if (!doMatch) {
+        req.flash('message', 'Неправильный старый пароль');
+        res.redirect('/changepassword');
+      }
+      else{
+        resetUser = user;
+        bcrypt.hash(newPassword, 12)
+        .then(hashedPassword => {
+          resetUser.password = hashedPassword;
+          return resetUser.save();
+        })
+        .then(result => {
+          res.redirect('/posts');
+        })
+      }
+    });
+  })
+  .catch(error => {
+    console.log(error);
+    req.flash('message', 'Нельзя изменить пароль');
+    res.redirect('/changepassword');
+  });
+}

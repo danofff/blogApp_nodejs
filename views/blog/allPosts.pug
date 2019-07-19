@@ -2,6 +2,8 @@ include ../partials/head.pug
 include ../partials/navigation.pug
 
 .container
+    if message
+            .alert.alert-danger(role="alert") #{message}
     if posts.length>0
         each post in posts
             h2 #{post.title}
@@ -9,15 +11,27 @@ include ../partials/navigation.pug
                 a(href=`/posts/author/${post.author.username}/${post.author.id.toString()}` title=`показать все посты ${post.author.username}`) #{post.author.username}
             small.text-muted.font-italic  - #{moment(post.date).format('DD.MM.YYYY')}
             div
-                form(action="/")
                 small
                     a(href=`/posts/theme/${post.theme._id}` title=`показать все посты по теме ${post.theme.themeName}`) #{post.theme.themeName}
             p !{post.preview}
             a.btn.btn-outline-dark.btn-sm(href=`/posts/${post._id}`) Читать &rarr;
+            .row.mt-2
+                .col-7.col-sm-6.col-lg-4
+                    .bg-light.border.border-secondary.rounded.p-1.display-flex
+                        span.mx-3(title="Рейтинг") #{post.rate} &#11014;&#11015;
+                        span.mr-3(title="Просмотрено") #{post.watched} 
+                            i.far.fa-eye
+                        span.mr-3(title="Добавлено в избранное") #{post.favorite} 
+                            i.far.fa-heart
+                        if path === '/posts/favorite'
+                            form#deleteFormFavoriteForm(action=`/posts/favorite/delete/${post._id}` method="POST")
+                                input(type="hidden", name="_csrf" value=csrfToken)
+                                button#removeFromFavorite.btn.btn-light.btn-sm.mr-3(title="Удалить из избранных" type="submit")
+                                    i.fas.fa-heart-broken
             hr
     else
         .jumbotron.jumbotron-fluid.text-center.p-4
-            if path ==='/'
+            if path ==='/'||path==='/posts'
                 h1 НЕТ ПОДХОДЯЩИХ ПОСТОВ
             if path ==='/posts/myposts'
                 h1 У ВАС НЕТ СОБСТВЕННЫХ ПОСТОВ

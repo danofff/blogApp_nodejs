@@ -15,7 +15,10 @@ include ../partials/navigation.pug
                 label(for="Email") Email:
                     span.star *
                 input.form-control(type="email", name="email" id="email" placeholder="Ваша почта" required)
-            input(type="hidden", name='_csrf' value=csrfToken)            
-            button.btn.btn-outline-success.btn-sm(type="submit") Восстановить
+            input(type="hidden", name='_csrf' value=csrfToken)  
+            .text-center
+                small После нажатия кнопки "Восстановить" на вашу почту будет отправлено письмо с дальнейшими действиями          
+            .text-center
+                button.btn.btn-outline-success.btn-sm.mt-2(type="submit") Восстановить
 
 include ../partials/foot.pug

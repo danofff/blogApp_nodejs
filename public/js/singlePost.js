@@ -1,7 +1,45 @@
-const commentForm = $('#commentForm');
-const commentButton = $('#sendCommentButton');
+//rate post
+const plusButton = $('#addPlusToPostButton');
+const minusButton = $('#addMinusToPostButton');
+
+plusButton.click(e => {
+    rateThisPost('plus');
+})
+minusButton.click(e => {
+    rateThisPost('minus');
+})
+
+
+//add to favorite post
+const addToFavoriteButton = $('#addToFavorite');
+addToFavoriteButton.click(e=> {
+    const form = $('#addToFavoriteForm');
+    $.ajax({
+        type: "POST",
+        url: form.attr('action'),
+        data: form.serialize(),
+        dataType: "html",
+        success: response => {
+            $('#favoriteAlert')
+            .removeAttr('hidden')
+            .find('.alert')
+            .text(response);
+        },
+        error: response => {
+            console.log(response);
+            $('#favoriteAlert')
+            .removeAttr('hidden')
+            .find('.alert')
+            .removeClass('alert-success')
+            .addClass('alert-danger')
+            .text(response.responseText);
+        }
+    });
+})
 
 //add new comment
+const commentForm = $('#commentForm');
+const commentButton = $('#sendCommentButton');
 commentButton.click( (e) => {
     const commentTextArea = $('#commentText');
     const commentText = commentTextArea.val();
@@ -44,7 +82,6 @@ commentButton.click( (e) => {
         }
     });
 });
-
 
 // delete comment
 const deleteCommentButtons = $('.delete');
@@ -103,3 +140,23 @@ function editComment(e){
         });
     })
 }
+
+function rateThisPost(rateTo) {
+    const form = $("#ratePostForm");
+    form.find('#rateHandler').val(rateTo);
+    $.ajax({
+        type: "POST",
+        url: form.attr('action'),
+        data: form.serialize(),
+        dataType: "html",
+        success: response => {
+            console.log(response);
+            $('#rate').text(response);
+        },
+        error: response => {
+            $('#rateAlert').removeAttr('hidden');
+            $('#rateAlert').find('.alert').text(response.responseText);
+        }
+    });
+}
+

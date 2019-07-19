@@ -2,13 +2,16 @@ const Post = require('../models/Post');
 const Theme = require('../models/Theme');
 const Comment = require('../models/Comment');
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
 
 exports.getAllPosts = (req, res, next) => {
-    Post.find({}, 'title date preview author')
+    let message = req.flash('message');
+    message = message.length>0? message: null;
+    Post.find({}, 'title date preview author rate watched favorite')
         .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
-                pageTitle: 'All posts',
+                pageTitle: 'Все посты',
                 path: '/posts',
                 posts: posts
             });
@@ -24,7 +27,7 @@ exports.getAddPost = (req, res, next) => {
         Theme.find()
         .then(themes => {
             res.render('blog/addPost', {
-                pageTitle: 'Add Post',
+                pageTitle: 'Добавить пост',
                 path: '/posts/add-post',
                 themes: themes
             });
@@ -56,7 +59,11 @@ exports.postAddPost = (req, res, next) => {
        preview: preview,
        text: text,
        author: author,
-       comments: []
+       comments: [],
+       ratedUsers:[],
+       rate: 0,
+       watched: 0,
+       favorite: 0
     });
     post.save()
         .then(result => {
@@ -75,7 +82,7 @@ exports.getPostsByTheme = (req, res, next) => {
         .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
-                pageTitle: 'All posts',
+                pageTitle: 'Посты по теме',
                 path: '/',
                 posts: posts
             });
@@ -96,7 +103,7 @@ exports.getPostsByAuthor = (req, res, next) => {
         .populate('theme')
         .then(posts => {
             res.render('blog/allPosts', {
-                pageTitle: 'All posts',
+                pageTitle: `Посты автора ${username}`,
                 path: '/',
                 posts: posts
             });
@@ -121,6 +128,8 @@ exports.getPost = (req, res, next) => {
                 post: post,
                 message: message
             });
+            post.watched++;
+            post.save();
         })
         .catch(error => {
             console.log(error);
@@ -137,7 +146,7 @@ exports.getEditPost = (req, res, next) => {
                     Theme.find()
                     .then(themes => {
                         res.render('blog/editPost', {
-                            pageTitle: `Edit ${post.title}`,
+                            pageTitle: `Редактирование ${post.title}`,
                             path: `/posts/edit`,
                             post: post, 
                             themes: themes
@@ -173,26 +182,18 @@ exports.postEditPost = (req, res, next) =>{
     let postText = req.body.text;
     const preview = postText.substring(0, postText.indexOf('[cut]'));
     const text = postText.replace('[cut]', '');
-    Post.findById(postId).
-        then(post => {
+    Post.findById(postId)
+        .then(post => {
             post.title= title;
             post.theme=theme;
             post.preview=preview;
             post.text=text;
             post.save();
-            res.render('blog/singlePost', {
-                pageTitle: post.title,
-                path: '/',
-                post: post
-            });
+            res.redirect(`/posts/${postId}`);
         })
         .catch(error => {
             console.log(error);
-            res.render('blog/singlePost', {
-                pageTitle: post.title,
-                path: '/',
-                post: post
-            });
+            res.redirect('/posts');
         });
 }
 
@@ -299,7 +300,7 @@ exports.postEditComment = (req, res, next) => {
 exports.getMyPosts = (req, res, next) =>{
     if(!req.session.user){
         req.flash('message', 'Для выполнения запроса нужно авторизироваться');
-        res.redirect('/posts');
+        return res.redirect('/posts');
     }
     const authorId = mongoose.Types.ObjectId(req.session.user._id);
     const username = req.session.user.login;
@@ -319,5 +320,120 @@ exports.getMyPosts = (req, res, next) =>{
         .catch(err => {
             console.log(err);
             redirect('/error');
+        });
+}
+
+exports.postAddRatePost = (req, res, next) => {
+    if(!req.session.user){
+        return res.status(500).send('Для голосования нужно авторизироваться');
+    }
+    const postId = req.params.post;
+    Post.findById(postId)
+        .then(post => {
+            if(!post){
+                res.status(500).send('Нет такого поста');
+            }
+            if(post.ratedUsers.includes(req.session.user._id.toString())){
+                return res.status(500).send('Нельзя проголосовать дважды');
+            }
+            let rate = req.body.rateHandler;
+            if(rate ==='plus'){
+                post.rate++;
+            }
+            else if(rate==='minus'){
+                post.rate--;
+            }
+            else {
+                return res.status(500).send('Ошибка при проголосовании');
+            }
+            post.ratedUsers.push(req.session.user._id.toString());
+            post.save();
+            res.status(200).send(post.rate.toString());
+        })
+        .catch(error => {
+            console.log(error);
+            return res.status(500).send('Ошибка при проголосовании');
+        })
+}
+
+exports.postAddToFavorite =(req, res, next) => {
+    if(!req.session.user){
+        return res.status(500).send('Для добавления в избранное нужно авторизироваться');
+    }
+    const postId = mongoose.Types.ObjectId(req.params.post);
+    const userId = req.session.user._id; 
+    User.findById(userId)
+        .then(user => {
+            if(user.favoritePosts.includes(postId)){
+                return res.status(500).send('Данный пост уже в ваших избранных');
+            }
+            user.favoritePosts.push(mongoose.Types.ObjectId(postId));
+            user.save();
+            res.status(200).send('Пост успешно доблавлен в избранные');
+            Post.findById(postId)
+                .then(post => {
+                    post.favorite++;
+                    post.save();
+                });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).send('Нельзя добавить пост в избранное');
+        })
+}
+
+exports.getFavoritePosts = (req, res, next) => {
+    if(!req.session.user){
+        req.flash('message', 'Для просмотра избранных постов нужно авторизироваться');
+        return res.redirect('back');
+    }
+    User.findById(req.session.user._id)
+        .then(user => {
+            Post.find({
+                '_id': user.favoritePosts
+            })
+            .populate('theme')
+            .then(findedPosts => {
+                res.render('blog/allPosts', {
+                    pageTitle: 'Избранные посты',
+                    path: '/posts/favorite',
+                    posts: findedPosts
+                })
+            })
+        })
+        .catch(error => {
+            console.log(error);
+            res.redirect('back');
+        })
+
+}
+
+exports.postDeleteFromFavorite = (req, res, next) => {
+    if(!req.session.user){
+        req.flash('message', 'Для просмотра избранных постов нужно авторизироваться');
+        return res.redirect('back');
+    }
+    User.findById(req.session.user._id)
+        .then(user => {
+            const postId = mongoose.Types.ObjectId(req.params.post);
+            const elementIndex=user.favoritePosts.indexOf(postId);
+            if (elementIndex !==-1){
+                user.favoritePosts.splice(elementIndex);
+                user.save();
+                res.redirect('back');
+                Post.findById(postId)
+                    .then(post => {
+                        post.favorite--;
+                        post.save();
+                    })
+            }
+            else {
+                req.flash('message', 'Нет такого поста в ваших избранных');
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            req.flash('message', 'Что-то пошло не так');
+            res.redirect('back');
         });
 }
